@@ -1,0 +1,51 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "target": "ES2021",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "moduleResolution": "node",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "alwaysStrict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "paths": {
+      "@modules/*": ["src/*"],
+      "@config/*": ["src/common/config/*"],
+      "@decorators/*": ["src/common/decorators/*"],
+      "@filters/*": ["src/common/filters/*"],
+      "@guards/*": ["src/common/guards/*"],
+      "@interceptors/*": ["src/common/interceptors/*"],
+      "@pipes/*": ["src/common/pipes/*"],
+      "@utils/*": ["src/common/utils/*"],
+      "@interfaces/*": ["src/common/interfaces/*"],
+      "@constants/*": ["src/common/constants/*"]
+    }
+  },
+  "include": ["src/**/*", "src/types/**/*.d.ts", "migrations/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.spec.ts",
+    "**/*.e2e-spec.ts",
+    "**/__tests__/**",
+    "src/**/script/**/*",
+    "scripts/**/*",
+    "test/**/*"
+  ]
+}
