@@ -4,9 +4,22 @@ require("dotenv/config");
 const core_1 = require("@nestjs/core");
 const app_module_1 = require("./app/app.module");
 const swagger_1 = require("@nestjs/swagger");
+const common_1 = require("@nestjs/common");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, {
         bufferLogs: true,
+        logger: new common_1.ConsoleLogger({
+            json: false,
+            logLevels: ['log', 'fatal', 'error', 'warn', 'debug'],
+            colors: true,
+            prefix: 'systemLog',
+            timestamp: true,
+            compact: true,
+            maxArrayLength: 100,
+            maxStringLength: 10000,
+            sorted: true,
+            showHidden: true,
+        })
     });
     app.enableShutdownHooks();
     app.enableCors();

@@ -11,12 +11,15 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const config_1 = require("@nestjs/config");
 const auth_module_1 = require("../modules/auth/auth.module");
+const shared_Module_1 = require("../shared/shared.Module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            shared_Module_1.SharedModule,
+            auth_module_1.AuthModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true
             }),

@@ -15,6 +15,7 @@ export declare class AuthService implements IAuthService {
     private readonly dateService;
     private readonly tokenService;
     private readonly passwordService;
+    private readonly logger;
     constructor(repository: IUserRepository, dateService: DateService, tokenService: TokenService, passwordService: PasswordService);
     register(request: RegisterRequest): Promise<Result<string>>;
     login(request: LoginRequest): Promise<Result<LoginResponse>>;

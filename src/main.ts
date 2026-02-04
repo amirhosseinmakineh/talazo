@@ -2,15 +2,29 @@ import "dotenv/config";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app/app.module"; 
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { ConsoleLogger } from "@nestjs/common";
+import { LoggingInterceptor } from "./shared/interceptors/loggingInterceptor";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
+    logger:new ConsoleLogger({
+      json: false,
+      logLevels : ['log','fatal','error','warn','debug'],
+      colors:true,
+      prefix:'systemLog',
+      timestamp : true,
+      compact:true,
+      maxArrayLength:100,
+    maxStringLength: 10000,
+    sorted:true,
+    showHidden:true,
+
+    })
   });
 
   app.enableShutdownHooks(); 
   app.enableCors(); 
-
   const config = new DocumentBuilder()
     .setTitle("Auth API")
     .setDescription("Authentication & Authorization APIs")

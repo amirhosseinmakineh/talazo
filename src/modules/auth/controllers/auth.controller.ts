@@ -13,6 +13,7 @@ import { RegisterRequest } from "../application/contracts/requests/registerReque
 import { LoginRequest } from "../application/contracts/requests/loginRequest";
 import { JwtAuthGuard } from "../guards/JwtAuthGuard";
 import { ChangePasswordRequest } from '../application/contracts/requests/changePasswordRequest';
+import { LogMethod } from "../../../shared/decorators/log.decorator";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -21,7 +22,7 @@ export class AuthController {
     @Inject("IAuthService")
     private readonly authService: IAuthService
   ) {}
-
+  @LogMethod()
   @Post("register")
   register(@Body() request: RegisterRequest) {
     debugger;

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Result } from "../../../../shared/patterns/result";
 import { IAuthService } from "../contracts/iAuthService";
 import { RegisterRequest } from "../contracts/requests/registerRequest";
@@ -15,9 +15,11 @@ import { ForgotPasswordResponse } from "../contracts/responses/forgotPasswordRes
 import { ResetPasswordResponse } from "../contracts/responses/resetPasswordResponse";
 import { ChangePasswordRequest } from "../contracts/requests/changePasswordRequest";
 import { AuthMessages } from '../../config/auth.message'
+import { LogMethod } from "../../../../shared/decorators/log.decorator";
 
 @Injectable()
 export class AuthService implements IAuthService {
+    private readonly logger = new Logger(AuthService.name);
   constructor(
     @Inject("IUserRepository")
     private readonly repository: IUserRepository,
@@ -25,8 +27,8 @@ export class AuthService implements IAuthService {
     private readonly tokenService: TokenService,
     private readonly passwordService: PasswordService,
   ) {}
-
   async register(request: RegisterRequest): Promise<Result<string>> {
+    
     const existingUser = await this.repository.getByUserName(request.userName as any);
     if (existingUser) {
       return Result.failure(AuthMessages.USER_EXISTS, HttpStatusCode.CONFLICT);
@@ -42,6 +44,7 @@ export class AuthService implements IAuthService {
       updatedAt: null,
       deletedAt: null,
     });
+    
 
     await this.repository.createEntity(user);
 

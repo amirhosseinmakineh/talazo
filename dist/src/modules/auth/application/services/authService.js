@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var AuthService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
@@ -22,12 +23,13 @@ const httpStatusCode_1 = require("../../../../../utilities/httpStatusCode");
 const tokenService_1 = require("../services/tokenService");
 const passwordService_1 = require("../../../../shared/security/passwordService");
 const auth_message_1 = require("../../config/auth.message");
-let AuthService = class AuthService {
+let AuthService = AuthService_1 = class AuthService {
     constructor(repository, dateService, tokenService, passwordService) {
         this.repository = repository;
         this.dateService = dateService;
         this.tokenService = tokenService;
         this.passwordService = passwordService;
+        this.logger = new common_1.Logger(AuthService_1.name);
     }
     async register(request) {
         const existingUser = await this.repository.getByUserName(request.userName);
@@ -122,7 +124,7 @@ let AuthService = class AuthService {
     }
 };
 exports.AuthService = AuthService;
-exports.AuthService = AuthService = __decorate([
+exports.AuthService = AuthService = AuthService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)("IUserRepository")),
     __metadata("design:paramtypes", [Object, dateService_1.DateService,

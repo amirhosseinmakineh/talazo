@@ -18,6 +18,7 @@ const swagger_1 = require("@nestjs/swagger");
 const registerRequest_1 = require("../application/contracts/requests/registerRequest");
 const loginRequest_1 = require("../application/contracts/requests/loginRequest");
 const changePasswordRequest_1 = require("../application/contracts/requests/changePasswordRequest");
+const log_decorator_1 = require("../../../shared/decorators/log.decorator");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -39,6 +40,7 @@ let AuthController = class AuthController {
 };
 exports.AuthController = AuthController;
 __decorate([
+    (0, log_decorator_1.LogMethod)(),
     (0, common_1.Post)("register"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),

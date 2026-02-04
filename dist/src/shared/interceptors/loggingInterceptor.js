@@ -12,27 +12,41 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoggingInterceptor = void 0;
 const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
+const logger_service_1 = require("../logger/logger.service");
+const dateService_1 = require("../../../utilities/dateService");
+const rxjs_1 = require("rxjs");
 let LoggingInterceptor = class LoggingInterceptor {
-    constructor(reflector) {
+    constructor(reflector, logger, dateService) {
         this.reflector = reflector;
-        this.logger = new common_1.Logger('LoggingInterceptor');
+        this.logger = logger;
+        this.dateService = dateService;
     }
     intercept(context, next) {
-        const handler = context.getHandler();
-        const logEnabled = this.reflector.get('log', handler);
-        if (logEnabled) {
-            const className = context.getClass().name;
-            const methodName = handler.name;
-            const args = context.getArgs();
-            this.logger.log(`در حال فراخوانی متد ${methodName} در کلاس ${className}`);
-            this.logger.log(`آرگومان‌ها: ${JSON.stringify(args)}`);
-        }
-        return next.handle();
+        debugger;
+        const hasLog = this.reflector.get('log', context.getHandler());
+        if (!hasLog)
+            return next.handle();
+        const request = context.switchToHttp().getRequest();
+        debugger;
+        request.traceId ??= `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+        const traceId = request.traceId;
+        const className = context.getClass().name;
+        const methodName = context.getHandler().name;
+        const action = `${className}.${methodName}`;
+        const start = Date.now();
+        const persianDate = this.dateService.convertTimestampToPersian(start);
+        this.logger.log(`[${traceId}] ${action} stage=start at=${persianDate}`, 'LoggingInterceptor');
+        return next.handle().pipe((0, rxjs_1.tap)(() => {
+            const end = Date.now();
+            this.logger.log(`[${traceId}] ${action} stage=end tookMs=${end - start} at=${this.dateService.convertTimestampToPersian(end)}`, 'LoggingInterceptor');
+        }));
     }
 };
 exports.LoggingInterceptor = LoggingInterceptor;
 exports.LoggingInterceptor = LoggingInterceptor = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [core_1.Reflector])
+    __metadata("design:paramtypes", [core_1.Reflector,
+        logger_service_1.SystemLogService,
+        dateService_1.DateService])
 ], LoggingInterceptor);
 //# sourceMappingURL=loggingInterceptor.js.map
