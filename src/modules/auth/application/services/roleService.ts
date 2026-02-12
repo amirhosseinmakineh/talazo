@@ -1,10 +1,13 @@
 import { DateService } from "utilities/dateService";
 import { IRoleRepository } from "../../domain/iRepositoryies/iRoleRepository";
-import { IRoleService } from "../contracts/iRoleService";
-import { GetAllRolesResponse } from "../contracts/responses/getAllRoles";
+import { IRoleService } from "../../../../Core/baseModule/contracts/iRoleService";
+import { GetAllRolesResponse } from "../../../../Core/baseModule/responses/role/getAllRoles";
 import { Result } from "@modules/shared/patterns/result";
 import { Inject, Injectable } from "@nestjs/common";
-import { CreateRoleRequest, UpdateRoleRequest } from "../contracts/requests/createRoleRequest";
+import {
+  CreateRoleRequest,
+  UpdateRoleRequest,
+} from "../../../../Core/baseModule/requests/role/createRoleRequest";
 import { Role } from "../../domain/entities/role";
 import { HttpStatusCode } from "utilities/httpStatusCode";
 import { IUserRepository } from "../../domain/iRepositoryies/iUserRepository";
@@ -16,12 +19,12 @@ export class RoleService implements IRoleService {
     private readonly repository: IRoleRepository,
     @Inject("IUserRepository")
     private readonly userRepository: IUserRepository,
-    private readonly dateService: DateService
+    private readonly dateService: DateService,
   ) {}
 
   async getAllRoles(
     cursor: string | null,
-    limit: number
+    limit: number,
   ): Promise<
     Result<{
       items: GetAllRolesResponse[];
@@ -32,32 +35,28 @@ export class RoleService implements IRoleService {
   > {
     var roles = await this.repository.getAll();
 
-    var sortedRoles = roles.sort((a, b) =>
-      a.id.localeCompare(b.id)
-    );
+    var sortedRoles = roles.sort((a, b) => a.id.localeCompare(b.id));
 
     var startIndex = 0;
     if (cursor) {
-      var index = sortedRoles.findIndex(r => r.id === cursor);
+      var index = sortedRoles.findIndex((r) => r.id === cursor);
       startIndex = index >= 0 ? index + 1 : 0;
     }
 
     var sliced = sortedRoles.slice(startIndex, startIndex + limit);
     var hasNextPage = startIndex + limit < sortedRoles.length;
 
-    var nextCursor = hasNextPage
-      ? sliced[sliced.length - 1].id
-      : undefined;
+    var nextCursor = hasNextPage ? sliced[sliced.length - 1].id : undefined;
 
     var result = {
-      items: sliced.map(r => ({
+      items: sliced.map((r) => ({
         id: r.id,
         userId: r.userId,
-        roleName: r.roleName
+        roleName: r.roleName,
       })),
       nextCursor,
       hasNextPage,
-      totalCount: sortedRoles.length
+      totalCount: sortedRoles.length,
     };
 
     return Result.success(result);
@@ -72,7 +71,7 @@ export class RoleService implements IRoleService {
       createdAt: this.dateService.convertTimestampToPersian(date.getTime()),
       updatedAt: null,
       deletedAt: null,
-      isDeleted: false
+      isDeleted: false,
     });
 
     var createdRole = await this.repository.createEntity(role);
@@ -80,7 +79,7 @@ export class RoleService implements IRoleService {
     return Result.success(
       createdRole.id,
       "کاربر با موفقیت به سیستم اضافه شد",
-      HttpStatusCode.CREATED
+      HttpStatusCode.CREATED,
     );
   }
 
@@ -97,14 +96,14 @@ export class RoleService implements IRoleService {
       { id: request.roleId } as any,
       {
         roleName: request.roleName,
-        updatedAt: now
-      } as any
+        updatedAt: now,
+      } as any,
     );
 
     return Result.success(
       request.roleId,
       "نقش با موفقیت آپدیت شد",
-      HttpStatusCode.CREATED
+      HttpStatusCode.CREATED,
     );
   }
 
@@ -126,17 +125,16 @@ export class RoleService implements IRoleService {
       {
         isDeleted: true,
         deletedAt: now,
-        updatedAt: now
-      } as any
+        updatedAt: now,
+      } as any,
     );
   }
 
   async addRoleToUser(
     userId: string,
     roleName: string,
-    moduleKey?: string
+    moduleKey?: string,
   ): Promise<Result<string>> {
-
     var user = await this.userRepository.getById(userId);
 
     if (!user) {
@@ -158,7 +156,10 @@ export class RoleService implements IRoleService {
     var existRole = await roles.getOne();
 
     if (existRole) {
-      return Result.failure("این نقش قبلا ثبت شده است", HttpStatusCode.CONFLICT);
+      return Result.failure(
+        "این نقش قبلا ثبت شده است",
+        HttpStatusCode.CONFLICT,
+      );
     }
 
     var now = this.dateService.convertTimestampToPersian(Date.now());
@@ -170,7 +171,7 @@ export class RoleService implements IRoleService {
       createdAt: now,
       updatedAt: null,
       deletedAt: null,
-      isDeleted: false
+      isDeleted: false,
     });
 
     var created = await this.repository.createEntity(role);
@@ -178,7 +179,7 @@ export class RoleService implements IRoleService {
     return Result.success(
       created.id,
       "نقش برای کاربر ثبت شد",
-      HttpStatusCode.CREATED
+      HttpStatusCode.CREATED,
     );
   }
 }

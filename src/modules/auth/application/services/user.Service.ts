@@ -1,9 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Result } from "../../../../shared/patterns/result";
 import { IUserRepository } from "../../domain/iRepositoryies/iUserRepository";
-import { IUserService } from "../contracts/iUserService";
-import { UpdateUserRequest } from "../contracts/requests/updateUserRequest";
-import { UsersResponse } from "../contracts/responses/usersResponse";
+import { IUserService } from "../../../../Core/baseModule/contracts/iUserService";
+import { UpdateUserRequest } from "../../../../Core/baseModule/requests/user/updateUserRequest";
+import { UsersResponse } from "../../../../Core/baseModule/responses/user/usersResponse";
 import { Cursor } from "../../../../shared/patterns/cursure";
 import { DateService } from "../../../../../utilities/dateService";
 import { HttpStatusCode } from "../../../../../utilities/httpStatusCode";
@@ -13,12 +13,12 @@ export class UserService implements IUserService {
   constructor(
     @Inject("IUserRepository")
     private readonly repository: IUserRepository,
-    private readonly dateService: DateService
+    private readonly dateService: DateService,
   ) {}
 
   async getAllUsers(
     cursor?: string,
-    limit: number = 10
+    limit: number = 10,
   ): Promise<
     Result<{
       items: UsersResponse[];
@@ -27,8 +27,6 @@ export class UserService implements IUserService {
       totalCount?: number;
     }>
   > {
-    debugger;
-
     const users = await this.repository.getAll();
 
     const sortedUsers = users.sort((a, b) => (a.id > b.id ? 1 : -1));
@@ -65,7 +63,7 @@ export class UserService implements IUserService {
         hasNextPage,
         totalCount: users.length,
       },
-      "Users retrieved successfully"
+      "Users retrieved successfully",
     );
   }
 
@@ -79,14 +77,14 @@ export class UserService implements IUserService {
     const date = new Date();
 
     const criteria = {
-      userName: request.userName,
+      username: request.userName,
       mobileNumber: request.mobileNumber,
       updatedAt: this.dateService.convertTimestampToPersian(date.getTime()),
     } as any;
 
     await this.repository.updateEntity(
       { id: user.id, isDeleted: false } as any,
-      criteria
+      criteria,
     );
 
     const updatedUser = await this.repository.getByUserName(request.userName);
@@ -94,7 +92,7 @@ export class UserService implements IUserService {
     if (!updatedUser) {
       return Result.failure(
         "خطا در دریافت کاربر بعد از آپدیت",
-        HttpStatusCode.INTERNAL_SERVER_ERROR
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
       );
     }
 
@@ -103,14 +101,14 @@ export class UserService implements IUserService {
     if (!userName) {
       return Result.failure(
         "نام کاربری نامعتبر است",
-        HttpStatusCode.INTERNAL_SERVER_ERROR
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
       );
     }
 
     if (updatedUser.mobileNumber == null) {
       return Result.failure(
         "شماره موبایل نامعتبر است",
-        HttpStatusCode.INTERNAL_SERVER_ERROR
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
       );
     }
 
@@ -126,7 +124,7 @@ export class UserService implements IUserService {
     return Result.success(
       response,
       "آپدیت کاربر با موفقیت انجام شد",
-      HttpStatusCode.OK
+      HttpStatusCode.OK,
     );
   }
 
@@ -138,7 +136,9 @@ export class UserService implements IUserService {
     }
 
     const now = new Date();
-    const nowPersian = this.dateService.convertTimestampToPersian(now.getTime());
+    const nowPersian = this.dateService.convertTimestampToPersian(
+      now.getTime(),
+    );
 
     await this.repository.updateEntity(
       { id: user.id } as any,
@@ -146,19 +146,22 @@ export class UserService implements IUserService {
         isDeleted: true,
         deletedAt: nowPersian,
         updatedAt: nowPersian,
-      } as any
+      } as any,
     );
 
     const deletedUser = await this.repository.getById(id);
 
     if (!deletedUser) {
-      return Result.failure("خطا در حذف کاربر", HttpStatusCode.INTERNAL_SERVER_ERROR);
+      return Result.failure(
+        "خطا در حذف کاربر",
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
+      );
     }
 
     if (!deletedUser.username) {
       return Result.failure(
         "نام کاربری نامعتبر است",
-        HttpStatusCode.INTERNAL_SERVER_ERROR
+        HttpStatusCode.INTERNAL_SERVER_ERROR,
       );
     }
 
@@ -171,6 +174,10 @@ export class UserService implements IUserService {
       deletedAt: deletedUser.deletedAt ?? null,
     };
 
-    return Result.success(response, "کاربر با موفقیت حذف شد", HttpStatusCode.OK);
+    return Result.success(
+      response,
+      "کاربر با موفقیت حذف شد",
+      HttpStatusCode.OK,
+    );
   }
 }

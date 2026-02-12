@@ -1,11 +1,14 @@
-import { Result } from "../../../../shared/patterns/result";
-import { GetAllRolesResponse } from "./responses/getAllRoles";
-import { CreateRoleRequest, UpdateRoleRequest } from "./requests/createRoleRequest";
+import { Result } from "../../../shared/patterns/result";
+import {
+  CreateRoleRequest,
+  UpdateRoleRequest,
+} from "../requests/role/createRoleRequest";
+import { GetAllRolesResponse } from "../responses/role/getAllRoles";
 
 export interface IRoleService {
   getAllRoles(
     cursor: string | null,
-    limit: number
+    limit: number,
   ): Promise<
     Result<{
       items: GetAllRolesResponse[];
@@ -16,10 +19,11 @@ export interface IRoleService {
   >;
 
   createRole(request: CreateRoleRequest): Promise<Result<string>>;
-
   updateRole(request: UpdateRoleRequest): Promise<Result<string>>;
-
   deleteRole(roleId: string): Promise<void>;
-
-  addRoleToUser(userId: string,roleName: string,moduleKey?: string): Promise<Result<string>>
+  addRoleToUser(
+    userId: string,
+    roleName: string,
+    moduleKey?: string,
+  ): Promise<Result<string>>;
 }

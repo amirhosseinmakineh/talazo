@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Result } from "../../../../shared/patterns/result";
-import { IAuthService } from "../contracts/iAuthService";
-import { RegisterRequest } from "../contracts/requests/registerRequest";
+import { IAuthService } from "../../../../Core/baseModule/contracts/iAuthService";
+import { RegisterRequest } from "../../../../Core/baseModule/requests/auth/registerRequest";
 import { IUserRepository } from "../../domain/iRepositoryies/iUserRepository";
 import { User } from "../../domain/entities/user";
 import { UserStatus } from "../../domain/entities/userStatus";
@@ -9,11 +9,14 @@ import { DateService } from "../../../../../utilities/dateService";
 import { HttpStatusCode } from "../../../../../utilities/httpStatusCode";
 import { TokenService } from "../services/tokenService";
 import { PasswordService } from "../../../../shared/security/passwordService";
-import { LoginRequest } from "../contracts/requests/loginRequest";
-import { LoginResponse } from "../contracts/responses/loginResponse";
-import { ForgotPasswordResponse } from "../contracts/responses/forgotPasswordResponse";
-import { Registerresponse, ResetPasswordResponse } from "../contracts/responses/resetPasswordResponse";
-import { ChangePasswordRequest } from "../contracts/requests/changePasswordRequest";
+import { LoginRequest } from "../../../../Core/baseModule/requests/auth/loginRequest";
+import { LoginResponse } from "../../../../Core/baseModule/responses/auth/loginResponse";
+import { ForgotPasswordResponse } from "../../../../Core/baseModule/responses/auth/forgotPasswordResponse";
+import {
+  Registerresponse,
+  ResetPasswordResponse,
+} from "../../../../Core/baseModule/responses/auth/resetPasswordResponse";
+import { ChangePasswordRequest } from "../../../../Core/baseModule/requests/auth/changePasswordRequest";
 import { AuthMessages } from "../../config/auth.message";
 import { LogMethod } from "../../../../shared/decorators/log.decorator";
 
@@ -26,11 +29,13 @@ export class AuthService implements IAuthService {
     private readonly repository: IUserRepository,
     private readonly dateService: DateService,
     private readonly tokenService: TokenService,
-    private readonly passwordService: PasswordService
+    private readonly passwordService: PasswordService,
   ) {}
 
   async register(request: RegisterRequest): Promise<Result<Registerresponse>> {
-    const existingUser = await this.repository.getByUserName(request.userName as any);
+    const existingUser = await this.repository.getByUserName(
+      request.userName as any,
+    );
     if (existingUser) {
       return Result.failure(AuthMessages.USER_EXISTS, HttpStatusCode.CONFLICT);
     }
@@ -58,24 +63,40 @@ export class AuthService implements IAuthService {
 
     await this.repository.createEntity(user);
 
-    return Result.success(result, AuthMessages.REGISTRATION_SUCCESS, HttpStatusCode.OK);
+    return Result.success(
+      result,
+      AuthMessages.REGISTRATION_SUCCESS,
+      HttpStatusCode.OK,
+    );
   }
 
   async login(request: LoginRequest): Promise<Result<LoginResponse>> {
-    debugger;
-
     if (!request.mobileNumber || !request.password) {
-      return Result.failure(AuthMessages.INVALID_CREDENTIALS, HttpStatusCode.BAD_REQUEST);
+      return Result.failure(
+        AuthMessages.INVALID_CREDENTIALS,
+        HttpStatusCode.BAD_REQUEST,
+      );
     }
 
-    const user = await this.repository.getUserByMobileNumber(request.mobileNumber);
+    const user = await this.repository.getUserByMobileNumber(
+      request.mobileNumber,
+    );
     if (!user) {
-      return Result.failure(AuthMessages.INVALID_CREDENTIALS, HttpStatusCode.UNAUTHORIZED);
+      return Result.failure(
+        AuthMessages.INVALID_CREDENTIALS,
+        HttpStatusCode.UNAUTHORIZED,
+      );
     }
 
-    const passOk = await this.passwordService.verifyPassword(user.passwordHash, request.password);
+    const passOk = await this.passwordService.verifyPassword(
+      user.passwordHash,
+      request.password,
+    );
     if (!passOk) {
-      return Result.failure(AuthMessages.INVALID_CREDENTIALS, HttpStatusCode.UNAUTHORIZED);
+      return Result.failure(
+        AuthMessages.INVALID_CREDENTIALS,
+        HttpStatusCode.UNAUTHORIZED,
+      );
     }
 
     const accessToken = await this.tokenService.signAccessToken(user);
@@ -92,8 +113,10 @@ export class AuthService implements IAuthService {
     return Result.success(result, AuthMessages.AUTH_SUCCESS, HttpStatusCode.OK);
   }
 
-  async forgotPassword(userName: string): Promise<Result<ForgotPasswordResponse>> {
-    const user = await this.repository.getUserByMobileNumber(userName as any);
+  async forgotPassword(
+    mobileNumber: string,
+  ): Promise<Result<ForgotPasswordResponse>> {
+    const user = await this.repository.getUserByMobileNumber(mobileNumber);
     if (!user) {
       return Result.failure(AuthMessages.USER_NOT_FOUND);
     }
@@ -106,49 +129,56 @@ export class AuthService implements IAuthService {
         passwordResetTokenHash: this.tokenService.hash(resetToken),
         passwordResetExpiresAt: new Date(Date.now() + 15 * 60 * 1000),
         updatedAt: this.dateService.convertTimestampToPersian(Date.now()),
-      } as any
+      } as any,
     );
 
     const response: ForgotPasswordResponse = {
-      resetPasswrodToken: resetToken,
+      resetPasswordToken: resetToken,
       expiresInMinutes: 15,
     };
 
     return Result.success(
       response,
       AuthMessages.PASSWORD_RESET_TOKEN_GENERATED,
-      HttpStatusCode.OK
+      HttpStatusCode.OK,
     );
   }
 
   async changePassword(
-    request: ChangePasswordRequest
+    request: ChangePasswordRequest,
   ): Promise<Result<ResetPasswordResponse>> {
-    const hashResetPassword = this.tokenService.hash(request.resetPasswordToken);
+    const hashResetPassword = this.tokenService.hash(
+      request.resetPasswordToken,
+    );
     const user = await this.tryFindUserByResetTokenHash(hashResetPassword);
 
     if (!user) {
-      return Result.failure(AuthMessages.INVALID_TOKEN, HttpStatusCode.UNAUTHORIZED);
+      return Result.failure(
+        AuthMessages.INVALID_TOKEN,
+        HttpStatusCode.UNAUTHORIZED,
+      );
     }
 
     const checkPassword = await this.passwordService.verifyPassword(
       user.passwordHash,
-      request.oldPassword
+      request.oldPassword,
     );
 
     if (!checkPassword) {
       return Result.failure(
         AuthMessages.OLD_PASSWORD_INCORRECT,
-        HttpStatusCode.UNAUTHORIZED
+        HttpStatusCode.UNAUTHORIZED,
       );
     }
 
     await this.repository.updateEntity(
       { id: user.id } as any,
       {
-        passwordHash: await this.passwordService.hashPassword(request.newPassword),
+        passwordHash: await this.passwordService.hashPassword(
+          request.newPassword,
+        ),
         updatedAt: this.dateService.convertTimestampToPersian(Date.now()),
-      } as any
+      } as any,
     );
 
     const resetPasswordResponse: ResetPasswordResponse = {
@@ -160,11 +190,13 @@ export class AuthService implements IAuthService {
     return Result.success(
       resetPasswordResponse,
       AuthMessages.PASSWORD_CHANGED,
-      HttpStatusCode.OK
+      HttpStatusCode.OK,
     );
   }
 
-  private async tryFindUserByResetTokenHash(_hash: string): Promise<User | null> {
+  private async tryFindUserByResetTokenHash(
+    _hash: string,
+  ): Promise<User | null> {
     var user = await this.repository.getUserByResetToken(_hash);
     return user;
   }
