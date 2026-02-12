@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { UserStatus } from "../../auth/domain/entities/userStatus";
+import { UserStatus } from "../../domain/entities/userStatus";
 
 export class RegisterRequest {
   @ApiProperty({ example: "amirhossein" })

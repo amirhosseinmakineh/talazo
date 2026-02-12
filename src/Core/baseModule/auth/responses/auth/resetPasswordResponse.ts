@@ -1,4 +1,4 @@
-import { UserStatus } from "../../auth/domain/entities/userStatus";
+import { UserStatus } from "../../domain/entities/userStatus";
 
 export interface ResetPasswordResponse {
   userId: string;

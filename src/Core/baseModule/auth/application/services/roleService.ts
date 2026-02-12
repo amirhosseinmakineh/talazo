@@ -1,13 +1,13 @@
 import { DateService } from "utilities/dateService";
 import { IRoleRepository } from "../../domain/iRepositoryies/iRoleRepository";
-import { IRoleService } from "../../../contracts/iRoleService";
-import { GetAllRolesResponse } from "../../../responses/role/getAllRoles";
+import { IRoleService } from "../../contracts/iRoleService";
+import { GetAllRolesResponse } from "../../responses/role/getAllRoles";
 import { Result } from "../../../../../shared/patterns/result";
 import { Inject, Injectable } from "@nestjs/common";
 import {
   CreateRoleRequest,
   UpdateRoleRequest,
-} from "../../../requests/role/createRoleRequest";
+} from "../../requests/role/createRoleRequest";
 import { Role } from "../../domain/entities/role";
 import { HttpStatusCode } from "utilities/httpStatusCode";
 import { IUserRepository } from "../../domain/iRepositoryies/iUserRepository";

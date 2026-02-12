@@ -1,4 +1,4 @@
-import { Result } from "../../../shared/patterns/result";
+import { Result } from "../../../../shared/patterns/result";
 import {
   CreateRoleRequest,
   UpdateRoleRequest,

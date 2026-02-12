@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Result } from "../../../../../shared/patterns/result";
-import { IAuthService } from "../../../contracts/iAuthService";
-import { RegisterRequest } from "../../../requests/auth/registerRequest";
+import { IAuthService } from "../../contracts/iAuthService";
+import { RegisterRequest } from "../../requests/auth/registerRequest";
 import { IUserRepository } from "../../domain/iRepositoryies/iUserRepository";
 import { User } from "../../domain/entities/user";
 import { UserStatus } from "../../domain/entities/userStatus";
@@ -9,14 +9,14 @@ import { DateService } from "../../../../../../utilities/dateService";
 import { HttpStatusCode } from "../../../../../../utilities/httpStatusCode";
 import { TokenService } from "../services/tokenService";
 import { PasswordService } from "../../../../../shared/security/passwordService";
-import { LoginRequest } from "../../../requests/auth/loginRequest";
-import { LoginResponse } from "../../../responses/auth/loginResponse";
-import { ForgotPasswordResponse } from "../../../responses/auth/forgotPasswordResponse";
+import { LoginRequest } from "../../requests/auth/loginRequest";
+import { LoginResponse } from "../../responses/auth/loginResponse";
+import { ForgotPasswordResponse } from "../../responses/auth/forgotPasswordResponse";
 import {
   Registerresponse,
   ResetPasswordResponse,
-} from "../../../responses/auth/resetPasswordResponse";
-import { ChangePasswordRequest } from "../../../requests/auth/changePasswordRequest";
+} from "../../responses/auth/resetPasswordResponse";
+import { ChangePasswordRequest } from "../../requests/auth/changePasswordRequest";
 import { AuthMessages } from "../../config/auth.message";
 import { LogMethod } from "../../../../../shared/decorators/log.decorator";
 

@@ -1,4 +1,4 @@
-import { Result } from "../../../shared/patterns/result";
+import { Result } from "../../../../shared/patterns/result";
 import { UpdateUserRequest } from "../requests/user/updateUserRequest";
 import { UsersResponse } from "../responses/user/usersResponse";
 

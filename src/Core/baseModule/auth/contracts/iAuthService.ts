@@ -1,4 +1,4 @@
-import { Result } from "../../../shared/patterns/result";
+import { Result } from "../../../../shared/patterns/result";
 import { ChangePasswordRequest } from "../requests/auth/changePasswordRequest";
 import { LoginRequest } from "../requests/auth/loginRequest";
 import { RegisterRequest } from "../requests/auth/registerRequest";

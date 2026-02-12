@@ -9,8 +9,8 @@ import {
 } from "@nestjs/common";
 import { UserService } from "../application/services/user.Service";
 import { Result } from "../../../../shared/patterns/result";
-import { UsersResponse } from "../../responses/user/usersResponse";
-import { UpdateUserRequest } from "../../requests/user/updateUserRequest";
+import { UsersResponse } from "../responses/user/usersResponse";
+import { UpdateUserRequest } from "../requests/user/updateUserRequest";
 
 @Controller("users")
 export class UserController {

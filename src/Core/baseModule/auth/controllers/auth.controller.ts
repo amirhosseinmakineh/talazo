@@ -9,11 +9,11 @@ import {
 } from "@nestjs/common";
 import { ApiBody, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
-import { IAuthService } from "../../contracts/iAuthService";
-import { RegisterRequest } from "../../requests/auth/registerRequest";
-import { LoginRequest } from "../../requests/auth/loginRequest";
+import { IAuthService } from "../contracts/iAuthService";
+import { RegisterRequest } from "../requests/auth/registerRequest";
+import { LoginRequest } from "../requests/auth/loginRequest";
 import { JwtAuthGuard } from "../guards/JwtAuthGuard";
-import { ChangePasswordRequest } from "../../requests/auth/changePasswordRequest";
+import { ChangePasswordRequest } from "../requests/auth/changePasswordRequest";
 import { LogMethod } from "../../../../shared/decorators/log.decorator";
 
 @ApiTags("Auth")
