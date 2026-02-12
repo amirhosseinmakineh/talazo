@@ -11,10 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoggingInterceptor = void 0;
 const common_1 = require("@nestjs/common");
-const core_1 = require("@nestjs/core");
-const logger_service_1 = require("../logger/logger.service");
-const dateService_1 = require("../../../utilities/dateService");
 const rxjs_1 = require("rxjs");
+const core_1 = require("@nestjs/core");
+const log_decorator_1 = require("../decorators/log.decorator");
+const dateService_1 = require("../../../utilities/dateService");
+const logger_service_1 = require("../logger/logger.service");
 let LoggingInterceptor = class LoggingInterceptor {
     constructor(reflector, logger, dateService) {
         this.reflector = reflector;
@@ -22,23 +23,49 @@ let LoggingInterceptor = class LoggingInterceptor {
         this.dateService = dateService;
     }
     intercept(context, next) {
-        debugger;
-        const hasLog = this.reflector.get('log', context.getHandler());
+        const hasLog = this.reflector.getAllAndOverride(log_decorator_1.LOG_KEY, [context.getHandler(), context.getClass()]);
         if (!hasLog)
             return next.handle();
-        const request = context.switchToHttp().getRequest();
-        debugger;
-        request.traceId ??= `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-        const traceId = request.traceId;
+        const req = context.switchToHttp().getRequest();
+        const res = context.switchToHttp().getResponse();
+        req.traceId ??= `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+        const traceId = req.traceId;
         const className = context.getClass().name;
         const methodName = context.getHandler().name;
         const action = `${className}.${methodName}`;
         const start = Date.now();
-        const persianDate = this.dateService.convertTimestampToPersian(start);
-        this.logger.log(`[${traceId}] ${action} stage=start at=${persianDate}`, 'LoggingInterceptor');
-        return next.handle().pipe((0, rxjs_1.tap)(() => {
+        const startFa = this.dateService.convertTimestampToPersian(start);
+        this.logger.log(`[${traceId}] ${action} stage=start at=${startFa}`, 'LoggingInterceptor');
+        return next.handle().pipe((0, rxjs_1.tap)((data) => {
             const end = Date.now();
-            this.logger.log(`[${traceId}] ${action} stage=end tookMs=${end - start} at=${this.dateService.convertTimestampToPersian(end)}`, 'LoggingInterceptor');
+            const tookMs = end - start;
+            const endFa = this.dateService.convertTimestampToPersian(end);
+            const statusCode = res?.statusCode;
+            const isResultFailure = data && typeof data === 'object' && 'success' in data && data.success === false;
+            if (isResultFailure) {
+                const msg = data?.message ?? 'Result failure';
+                this.logger.warn(`[${traceId}] ${action} stage=end WARN status=${statusCode} tookMs=${tookMs} msg="${msg}" at=${endFa}`, 'LoggingInterceptor');
+                return;
+            }
+            if (typeof statusCode === 'number' && statusCode >= 500) {
+                this.logger.error(`[${traceId}] ${action} stage=end ERROR status=${statusCode} tookMs=${tookMs} at=${endFa}`, 'LoggingInterceptor');
+                return;
+            }
+            if (typeof statusCode === 'number' && statusCode >= 400) {
+                this.logger.warn(`[${traceId}] ${action} stage=end WARN status=${statusCode} tookMs=${tookMs} at=${endFa}`, 'LoggingInterceptor');
+                return;
+            }
+            this.logger.log(`[${traceId}] ${action} stage=end status=${statusCode} tookMs=${tookMs} at=${endFa}`, 'LoggingInterceptor');
+        }), (0, rxjs_1.catchError)((err) => {
+            const end = Date.now();
+            const tookMs = end - start;
+            const endFa = this.dateService.convertTimestampToPersian(end);
+            const statusCode = err instanceof common_1.HttpException
+                ? err.getStatus()
+                : common_1.HttpStatus.INTERNAL_SERVER_ERROR;
+            const errMsg = err?.message ?? 'Unknown error';
+            this.logger.error(`[${traceId}] ${action} stage=error status=${statusCode} tookMs=${tookMs} msg="${errMsg}" at=${endFa}`, 'LoggingInterceptor');
+            return (0, rxjs_1.throwError)(() => err);
         }));
     }
 };

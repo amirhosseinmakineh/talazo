@@ -46,22 +46,24 @@ let AuthService = AuthService_1 = class AuthService {
             updatedAt: null,
             deletedAt: null,
         });
-        await this.repository.createEntity(user);
-        return result_1.Result.success(JSON.stringify({
-            id: user.id,
-            username: user.username,
+        var result = {
+            userName: user.username,
             mobileNumber: user.mobileNumber,
-            userStatus: user.userStatus,
+            userStatuse: user.userStatus,
+            isDeleted: user.isDeleted,
             createdAt: user.createdAt,
-        }), auth_message_1.AuthMessages.REGISTRATION_SUCCESS, httpStatusCode_1.HttpStatusCode.OK);
+            updatedAt: user.updatedAt,
+            deletedAt: user.deletedAt,
+        };
+        await this.repository.createEntity(user);
+        return result_1.Result.success(result, auth_message_1.AuthMessages.REGISTRATION_SUCCESS, httpStatusCode_1.HttpStatusCode.OK);
     }
     async login(request) {
-        const identifier = (request.identifier ?? "").trim();
-        const password = (request.password ?? "").trim();
-        if (!identifier || !password) {
+        debugger;
+        if (!request.mobileNumber || !request.password) {
             return result_1.Result.failure(auth_message_1.AuthMessages.INVALID_CREDENTIALS, httpStatusCode_1.HttpStatusCode.BAD_REQUEST);
         }
-        const user = await this.repository.getByUserName(identifier);
+        const user = await this.repository.getUserByMobileNumber(request.mobileNumber);
         if (!user) {
             return result_1.Result.failure(auth_message_1.AuthMessages.INVALID_CREDENTIALS, httpStatusCode_1.HttpStatusCode.UNAUTHORIZED);
         }
@@ -76,7 +78,7 @@ let AuthService = AuthService_1 = class AuthService {
             username: user.username,
             mobileNumber: user.mobileNumber,
             accessToken,
-            refreshToken,
+            refreshToken
         };
         return result_1.Result.success(result, auth_message_1.AuthMessages.AUTH_SUCCESS, httpStatusCode_1.HttpStatusCode.OK);
     }

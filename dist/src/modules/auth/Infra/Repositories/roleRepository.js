@@ -21,6 +21,10 @@ let RoleRepository = class RoleRepository extends baseRepository_1.BaseRepositor
     constructor(repo) {
         super(repo);
     }
+    async existsByRoleName(roleName) {
+        return await this.repository.exists({ where: { roleName }
+        });
+    }
 };
 exports.RoleRepository = RoleRepository;
 exports.RoleRepository = RoleRepository = __decorate([

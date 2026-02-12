@@ -17,7 +17,7 @@ exports.LoginRequest = LoginRequest;
 __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
-], LoginRequest.prototype, "identifier", void 0);
+], LoginRequest.prototype, "mobileNumber", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)

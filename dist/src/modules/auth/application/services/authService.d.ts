@@ -8,7 +8,7 @@ import { PasswordService } from "../../../../shared/security/passwordService";
 import { LoginRequest } from "../contracts/requests/loginRequest";
 import { LoginResponse } from "../contracts/responses/loginResponse";
 import { ForgotPasswordResponse } from "../contracts/responses/forgotPasswordResponse";
-import { ResetPasswordResponse } from "../contracts/responses/resetPasswordResponse";
+import { Registerresponse, ResetPasswordResponse } from '../contracts/responses/resetPasswordResponse';
 import { ChangePasswordRequest } from "../contracts/requests/changePasswordRequest";
 export declare class AuthService implements IAuthService {
     private readonly repository;
@@ -17,7 +17,7 @@ export declare class AuthService implements IAuthService {
     private readonly passwordService;
     private readonly logger;
     constructor(repository: IUserRepository, dateService: DateService, tokenService: TokenService, passwordService: PasswordService);
-    register(request: RegisterRequest): Promise<Result<string>>;
+    register(request: RegisterRequest): Promise<Result<Registerresponse>>;
     login(request: LoginRequest): Promise<Result<LoginResponse>>;
     forgotPassword(userName: string): Promise<Result<ForgotPasswordResponse>>;
     changePassword(request: ChangePasswordRequest): Promise<Result<ResetPasswordResponse>>;

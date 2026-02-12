@@ -5,9 +5,10 @@ import {
   UseGuards,
   Req,
   Inject,
+  Res,
 } from "@nestjs/common";
 import { ApiBody, ApiTags } from "@nestjs/swagger";
-
+import{Response} from 'express'
 import { IAuthService } from "../application/contracts/iAuthService";
 import { RegisterRequest } from "../application/contracts/requests/registerRequest";
 import { LoginRequest } from "../application/contracts/requests/loginRequest";
@@ -26,16 +27,31 @@ export class AuthController {
   @Post("register")
   register(@Body() request: RegisterRequest) {
     debugger;
-    return this.authService.register(request);
+    var result =  this.authService.register(request);
   }
 
-  @Post("login")
-  login(@Body() request: LoginRequest) {
-    return this.authService.login(request);
-  }
+@Post('login')
+async login(
+  @Body() request: LoginRequest,
+  @Res({ passthrough: true }) res: Response,
+) {
+  const result = await this.authService.login(request);
+  
+  res.cookie('refresh_token', result.data?.refreshToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
+    path: '/auth/refresh',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
 
-
-// ... داخل کلاس کنترلر
+  return {
+    id: result.data?.id,
+    username: result.data?.username,
+    mobileNumber: result.data?.mobileNumber,
+    accessToken: result.data?.accessToken,
+  };
+}
 
   @Post("forgot-password")
   @ApiBody({

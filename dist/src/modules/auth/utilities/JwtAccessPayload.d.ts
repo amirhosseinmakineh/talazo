@@ -1,11 +1,11 @@
 export interface JwtAccessPayload {
-    subject: string;
+    sub: string;
     username?: string;
-    roles?: string[];
     typ: "access";
+    mobileNumber: string;
 }
 export interface JwtRefreshPayload {
-    subject: string;
+    sub: string;
     jti: string;
     typ: "refresh";
 }

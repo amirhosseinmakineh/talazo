@@ -26,9 +26,12 @@ __decorate([
     __metadata("design:type", Object)
 ], Role.prototype, "moduleKey", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_1.User, (u) => u.roles, {
-        onDelete: "CASCADE"
-    }),
+    (0, typeorm_1.Column)({ type: "uuid" }),
+    __metadata("design:type", String)
+], Role.prototype, "userId", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_1.User, (u) => u.roles, { onDelete: "CASCADE" }),
+    (0, typeorm_1.JoinColumn)({ name: "userId" }),
     __metadata("design:type", user_1.User)
 ], Role.prototype, "user", void 0);
 __decorate([
@@ -37,6 +40,6 @@ __decorate([
 ], Role.prototype, "rolePermissions", void 0);
 exports.Role = Role = __decorate([
     (0, typeorm_1.Entity)("roles"),
-    (0, typeorm_1.Index)(["moduleKey", "roleName"], { unique: true })
+    (0, typeorm_1.Index)(["userId", "moduleKey", "roleName"], { unique: true })
 ], Role);
 //# sourceMappingURL=role.js.map

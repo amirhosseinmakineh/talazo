@@ -25,10 +25,23 @@ let AuthController = class AuthController {
     }
     register(request) {
         debugger;
-        return this.authService.register(request);
+        var result = this.authService.register(request);
     }
-    login(request) {
-        return this.authService.login(request);
+    async login(request, res) {
+        const result = await this.authService.login(request);
+        res.cookie('refresh_token', result.data?.refreshToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'lax',
+            path: '/auth/refresh',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        return {
+            id: result.data?.id,
+            username: result.data?.username,
+            mobileNumber: result.data?.mobileNumber,
+            accessToken: result.data?.accessToken,
+        };
     }
     forgotPassword(mobileNumber) {
         return this.authService.forgotPassword(mobileNumber);
@@ -48,11 +61,12 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "register", null);
 __decorate([
-    (0, common_1.Post)("login"),
+    (0, common_1.Post)('login'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [loginRequest_1.LoginRequest]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [loginRequest_1.LoginRequest, Object]),
+    __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
     (0, common_1.Post)("forgot-password"),

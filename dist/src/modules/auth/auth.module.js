@@ -20,6 +20,8 @@ const passwordService_1 = require("../../../src/shared/security/passwordService"
 const role_1 = require("./domain/entities/role");
 const rolePermission_1 = require("./domain/entities/rolePermission");
 const permission_1 = require("./domain/entities/permission");
+const user_controller_1 = require("./controllers/user.controller");
+const user_Service_1 = require("./application/services/user.Service");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -32,17 +34,19 @@ exports.AuthModule = AuthModule = __decorate([
                 signOptions: { expiresIn: "15m" },
             }),
         ],
-        controllers: [auth_controller_1.AuthController],
+        controllers: [auth_controller_1.AuthController, user_controller_1.UserController],
         providers: [
             authService_1.AuthService,
             { provide: "IAuthService", useExisting: authService_1.AuthService },
+            user_Service_1.UserService,
+            { provide: 'IUserService', useExisting: user_Service_1.UserService },
             dateService_1.DateService,
             tokenService_1.TokenService,
             passwordService_1.PasswordService,
             userRepository_1.UserRepository,
             { provide: "IUserRepository", useExisting: userRepository_1.UserRepository },
         ],
-        exports: ["IAuthService"],
+        exports: ["IAuthService", 'IUserService'],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

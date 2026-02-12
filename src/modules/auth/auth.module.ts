@@ -12,6 +12,8 @@ import { Role } from "./domain/entities/role";
 import { RolePermission } from './domain/entities/rolePermission';
 import { permission } from "process";
 import { Permission } from "./domain/entities/permission";
+import { UserController } from "./controllers/user.controller";
+import { UserService } from "./application/services/user.Service";
 
 @Module({
   imports: [
@@ -22,11 +24,13 @@ import { Permission } from "./domain/entities/permission";
     }),
   ],
 
-  controllers: [AuthController],
+  controllers: [AuthController,UserController],
 
   providers: [
     AuthService,
     { provide: "IAuthService", useExisting: AuthService },
+    UserService,
+    {provide : 'IUserService',useExisting : UserService},
 
     DateService,
     TokenService,
@@ -36,6 +40,6 @@ import { Permission } from "./domain/entities/permission";
     { provide: "IUserRepository", useExisting: UserRepository },
   ],
 
-  exports: ["IAuthService"],
+  exports: ["IAuthService",'IUserService'],
 })
 export class AuthModule {}

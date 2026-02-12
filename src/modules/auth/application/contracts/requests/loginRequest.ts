@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 export class LoginRequest {
   @ApiProperty()
-  identifier!: string;
+  mobileNumber!: string;
 
   @ApiProperty()
   password!: string;

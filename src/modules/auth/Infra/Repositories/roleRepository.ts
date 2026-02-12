@@ -9,4 +9,9 @@ export class RoleRepository extends BaseRepository<string, Role>
           constructor(@InjectRepository(Role) repo : Repository<Role>){
                super(repo)
           }
+          async existsByRoleName(roleName: string): Promise<boolean> {
+          return await this.repository.exists({where: { roleName }
+          });
+          }
+
 }

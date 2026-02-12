@@ -12,23 +12,24 @@ import { PasswordService } from "../../../../shared/security/passwordService";
 import { LoginRequest } from "../contracts/requests/loginRequest";
 import { LoginResponse } from "../contracts/responses/loginResponse";
 import { ForgotPasswordResponse } from "../contracts/responses/forgotPasswordResponse";
-import { ResetPasswordResponse } from "../contracts/responses/resetPasswordResponse";
+import { Registerresponse, ResetPasswordResponse } from "../contracts/responses/resetPasswordResponse";
 import { ChangePasswordRequest } from "../contracts/requests/changePasswordRequest";
-import { AuthMessages } from '../../config/auth.message'
+import { AuthMessages } from "../../config/auth.message";
 import { LogMethod } from "../../../../shared/decorators/log.decorator";
 
 @Injectable()
 export class AuthService implements IAuthService {
-    private readonly logger = new Logger(AuthService.name);
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     @Inject("IUserRepository")
     private readonly repository: IUserRepository,
     private readonly dateService: DateService,
     private readonly tokenService: TokenService,
-    private readonly passwordService: PasswordService,
+    private readonly passwordService: PasswordService
   ) {}
-  async register(request: RegisterRequest): Promise<Result<string>> {
-    
+
+  async register(request: RegisterRequest): Promise<Result<Registerresponse>> {
     const existingUser = await this.repository.getByUserName(request.userName as any);
     if (existingUser) {
       return Result.failure(AuthMessages.USER_EXISTS, HttpStatusCode.CONFLICT);
@@ -44,52 +45,42 @@ export class AuthService implements IAuthService {
       updatedAt: null,
       deletedAt: null,
     });
-    
+
+    var result: Registerresponse = {
+      userName: user.username,
+      mobileNumber: user.mobileNumber,
+      userStatuse: user.userStatus,
+      isDeleted: user.isDeleted,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      deletedAt: user.deletedAt,
+    };
 
     await this.repository.createEntity(user);
 
-    return Result.success(
-      JSON.stringify({
-        id: user.id,
-        username: user.username,
-        mobileNumber: user.mobileNumber,
-        userStatus: user.userStatus,
-        createdAt: user.createdAt,
-      }),
-      AuthMessages.REGISTRATION_SUCCESS,
-      HttpStatusCode.OK
-    );
+    return Result.success(result, AuthMessages.REGISTRATION_SUCCESS, HttpStatusCode.OK);
   }
 
   async login(request: LoginRequest): Promise<Result<LoginResponse>> {
-    const identifier = (request.identifier ?? "").trim();
-    const password = (request.password ?? "").trim();
+    debugger;
 
-    if (!identifier || !password) {
-      return Result.failure(
-        AuthMessages.INVALID_CREDENTIALS,
-        HttpStatusCode.BAD_REQUEST
-      );
+    if (!request.mobileNumber || !request.password) {
+      return Result.failure(AuthMessages.INVALID_CREDENTIALS, HttpStatusCode.BAD_REQUEST);
     }
 
-    const user = await this.repository.getByUserName(identifier);
+    const user = await this.repository.getUserByMobileNumber(request.mobileNumber);
     if (!user) {
-      return Result.failure(
-        AuthMessages.INVALID_CREDENTIALS,
-        HttpStatusCode.UNAUTHORIZED
-      );
+      return Result.failure(AuthMessages.INVALID_CREDENTIALS, HttpStatusCode.UNAUTHORIZED);
     }
 
     const passOk = await this.passwordService.verifyPassword(user.passwordHash, request.password);
     if (!passOk) {
-      return Result.failure(
-        AuthMessages.INVALID_CREDENTIALS,
-        HttpStatusCode.UNAUTHORIZED
-      );
+      return Result.failure(AuthMessages.INVALID_CREDENTIALS, HttpStatusCode.UNAUTHORIZED);
     }
 
     const accessToken = await this.tokenService.signAccessToken(user);
     const refreshToken = await this.tokenService.signRefreshToken(user);
+
     const result: LoginResponse = {
       id: user.id,
       username: user.username,
@@ -103,7 +94,6 @@ export class AuthService implements IAuthService {
 
   async forgotPassword(userName: string): Promise<Result<ForgotPasswordResponse>> {
     const user = await this.repository.getUserByMobileNumber(userName as any);
-
     if (!user) {
       return Result.failure(AuthMessages.USER_NOT_FOUND);
     }
@@ -131,7 +121,9 @@ export class AuthService implements IAuthService {
     );
   }
 
-  async changePassword(request: ChangePasswordRequest): Promise<Result<ResetPasswordResponse>> {
+  async changePassword(
+    request: ChangePasswordRequest
+  ): Promise<Result<ResetPasswordResponse>> {
     const hashResetPassword = this.tokenService.hash(request.resetPasswordToken);
     const user = await this.tryFindUserByResetTokenHash(hashResetPassword);
 
@@ -139,9 +131,16 @@ export class AuthService implements IAuthService {
       return Result.failure(AuthMessages.INVALID_TOKEN, HttpStatusCode.UNAUTHORIZED);
     }
 
-    const checkPassword = await this.passwordService.verifyPassword(user.passwordHash, request.oldPassword);
+    const checkPassword = await this.passwordService.verifyPassword(
+      user.passwordHash,
+      request.oldPassword
+    );
+
     if (!checkPassword) {
-      return Result.failure(AuthMessages.OLD_PASSWORD_INCORRECT, HttpStatusCode.UNAUTHORIZED);
+      return Result.failure(
+        AuthMessages.OLD_PASSWORD_INCORRECT,
+        HttpStatusCode.UNAUTHORIZED
+      );
     }
 
     await this.repository.updateEntity(
@@ -158,7 +157,11 @@ export class AuthService implements IAuthService {
       userId: user.id,
     };
 
-    return Result.success(resetPasswordResponse, AuthMessages.PASSWORD_CHANGED, HttpStatusCode.OK);
+    return Result.success(
+      resetPasswordResponse,
+      AuthMessages.PASSWORD_CHANGED,
+      HttpStatusCode.OK
+    );
   }
 
   private async tryFindUserByResetTokenHash(_hash: string): Promise<User | null> {

@@ -1,4 +1,4 @@
 export declare class LoginRequest {
-    identifier: string;
+    mobileNumber: string;
     password: string;
 }

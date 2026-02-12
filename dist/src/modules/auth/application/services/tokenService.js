@@ -18,17 +18,20 @@ let TokenService = class TokenService {
         this.jwtService = jwtService;
     }
     async signAccessToken(user) {
-        debugger;
         const secret = process.env.JWT_ACCESS_SECRET;
         if (!secret)
-            throw new Error("JWT_ACCESS_SECRET is not set");
+            throw new Error('JWT_ACCESS_SECRET is not set');
         const payload = {
-            subject: user.id,
+            sub: user.id,
             username: user.username,
-            typ: "access",
+            typ: 'access',
+            mobileNumber: user.mobileNumber,
         };
-        const expiresIn = (process.env.JWT_ACCESS_EXPIRES_IN ?? "15m");
-        return this.jwtService.signAsync(payload, { secret, expiresIn });
+        const expiresIn = (process.env.JWT_ACCESS_EXPIRES_IN ?? '15m');
+        return this.jwtService.signAsync(payload, {
+            secret,
+            expiresIn,
+        });
     }
     verifyAccessToken(token) {
         const secret = process.env.JWT_ACCESS_SECRET;
@@ -46,7 +49,7 @@ let TokenService = class TokenService {
         if (!secret)
             throw new Error("JWT_REFRESH_SECRET is not set");
         const payload = {
-            subject: user.id,
+            sub: user.id,
             jti: (0, crypto_1.randomBytes)(16).toString("hex"),
             typ: "refresh",
         };

@@ -9,21 +9,25 @@ import { JwtAccessPayload, JwtRefreshPayload } from "../../utilities/JwtAccessPa
 export class TokenService {
   constructor(private readonly jwtService: JwtService) {}
 
-  async signAccessToken(user: User): Promise<string> {
-    debugger;
-    const secret = process.env.JWT_ACCESS_SECRET;
-    if (!secret) throw new Error("JWT_ACCESS_SECRET is not set");
+async signAccessToken(user: User): Promise<string> {
+  const secret = process.env.JWT_ACCESS_SECRET;
+  if (!secret) throw new Error('JWT_ACCESS_SECRET is not set');
 
-    const payload: JwtAccessPayload = {
-      subject: user.id,
-      username: user.username,
-      typ: "access",
-    };
+  const payload: JwtAccessPayload = {
+    sub: user.id,
+    username: user.username,
+    typ: 'access',
+    mobileNumber : user.mobileNumber,
+  };
 
-    const expiresIn = (process.env.JWT_ACCESS_EXPIRES_IN ?? "15m") as StringValue;
+  const expiresIn = (process.env.JWT_ACCESS_EXPIRES_IN ?? '15m') as StringValue;
 
-    return this.jwtService.signAsync(payload, { secret, expiresIn });
-  }
+  return this.jwtService.signAsync(payload, {
+    secret,
+    expiresIn,
+  });
+}
+
 
 verifyAccessToken(token: string): JwtAccessPayload | null {
   const secret = process.env.JWT_ACCESS_SECRET;
@@ -42,7 +46,7 @@ verifyAccessToken(token: string): JwtAccessPayload | null {
     if (!secret) throw new Error("JWT_REFRESH_SECRET is not set");
 
     const payload: JwtRefreshPayload = {
-      subject: user.id,
+      sub: user.id,
       jti: randomBytes(16).toString("hex"),
       typ: "refresh",
     };

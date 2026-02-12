@@ -1,56 +1,59 @@
-import { Repository, FindOptionsWhere, DeepPartial, Entity } from 'typeorm';
-import { BaseEntity } from '../domain/base.Entity';
-import { IBaseRepository } from '../domain/iBaseRepository';
-import { EntityState } from '../domain/entityState';
-import e from 'express';
+import {
+  DeepPartial,
+  FindOptionsWhere,
+  Repository,
+  SelectQueryBuilder,
+} from "typeorm";
+import { BaseEntity } from "../domain/base.Entity";
+import { IBaseRepository } from "../domain/iBaseRepository";
 
-export class BaseRepository<Tkey, TEntity extends BaseEntity> implements IBaseRepository<Tkey,TEntity> {
-    
-    protected readonly repository: Repository<TEntity>;
-    private readonly state : EntityState = EntityState.none;
-    constructor(repository: Repository<TEntity>) {
-        this.repository = repository;
-    }
+export class BaseRepository<Tkey, TEntity extends BaseEntity>
+  implements IBaseRepository<Tkey, TEntity>
+{
+  protected readonly repository: Repository<TEntity>;
 
+  constructor(repository: Repository<TEntity>) {
+    this.repository = repository;
+  }
 
-        async createEntity(entity: TEntity): Promise<TEntity>
-        {
-          debugger;
-             var entity = this.repository.create(entity);
-              this.repository.save(entity);
-              return entity;
-        }
+  createQueryBuilder(alias: string): SelectQueryBuilder<TEntity> {
+    return this.repository.createQueryBuilder(alias);
+  }
 
-async updateEntity(
-  criteria: FindOptionsWhere<TEntity>,
-  partialEntity: DeepPartial<TEntity>
-): Promise<void> {
-  const entity = await this.repository.findOne({ where: criteria });
-  if (!entity) return;
+  async createEntity(entity: TEntity): Promise<TEntity> {
+    const created = this.repository.create(entity);
+    return await this.repository.save(created);
+  }
 
-  await this.repository.update(criteria, partialEntity as any);
-}
+  async updateEntity(
+    criteria: FindOptionsWhere<TEntity>,
+    partialEntity: DeepPartial<TEntity>
+  ): Promise<void> {
+    await this.repository.update(criteria, partialEntity as any);
+  }
 
+  async deleteEntity(id: Tkey): Promise<void> {
+    await this.repository.update({ id } as any, { isDeleted: true } as any);
+  }
 
-        async deleteEntity(id: Tkey): Promise<void> 
-        {
-            const entity = await this.repository
-            .findOne({ where: { id: id } as any});
+  async getAll(): Promise<TEntity[]> {
+    return await this.repository.find({
+      where: { isDeleted: false } as any,
+    });
+  }
 
-        if (entity != null) {
-            entity.isDeleted = true;
-        }
-    }
+  async getById(id: Tkey): Promise<TEntity | null> {
+    return await this.repository.findOne({
+      where: { id, isDeleted: false } as any,
+    });
+  }
 
-       async getAll(): Promise<TEntity[]> 
-        {
-            return await this.repository
-            .find({ where: { isDeleted: false } as any });
-        }
+  async findOneBy(criteria: FindOptionsWhere<TEntity>): Promise<TEntity | null> {
+    return await this.repository.findOne({ where: criteria });
+  }
 
-        async getById(id : Tkey) : Promise<TEntity | null>
-        {
-            return  await  this.repository
-            .findOne({where : {id : id} as any});
-        }   
+  async existsBy(criteria: FindOptionsWhere<TEntity>): Promise<boolean> {
+    const count = await this.repository.count({ where: criteria });
+    return count > 0;
+  }
 }
