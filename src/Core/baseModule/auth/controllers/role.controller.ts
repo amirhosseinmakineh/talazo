@@ -8,11 +8,11 @@ import {
   Put,
   Query,
 } from "@nestjs/common";
-import { IRoleService } from "../../../Core/baseModule/contracts/iRoleService";
+import { IRoleService } from "../../contracts/iRoleService";
 import {
   CreateRoleRequest,
   UpdateRoleRequest,
-} from "../../../Core/baseModule/requests/role/createRoleRequest";
+} from "../../requests/role/createRoleRequest";
 
 @Controller("roles")
 export class RoleController {

@@ -1,6 +1,6 @@
-import { BaseRepository } from "../../../../Core/infra/baseRepository";
-import { RolePermission } from "../../domain/entities/rolePermission";
-import { IRolePermissionRepository } from "../../domain/iRepositoryies/iRolePermissionRepository";
+import { BaseRepository } from "../baseRepository";
+import { RolePermission } from "../../baseModule/auth/domain/entities/rolePermission";
+import { IRolePermissionRepository } from "../../baseModule/auth/domain/iRepositoryies/iRolePermissionRepository";
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from "typeorm";
 
