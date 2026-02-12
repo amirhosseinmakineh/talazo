@@ -8,9 +8,9 @@ import {
   Param,
 } from "@nestjs/common";
 import { UserService } from "../application/services/user.Service";
-import { Result } from "../../../shared/patterns/result";
-import { UsersResponse } from "../../../Core/baseModule/responses/user/usersResponse";
-import { UpdateUserRequest } from "../../../Core/baseModule/requests/user/updateUserRequest";
+import { Result } from "../../../../shared/patterns/result";
+import { UsersResponse } from "../../responses/user/usersResponse";
+import { UpdateUserRequest } from "../../requests/user/updateUserRequest";
 
 @Controller("users")
 export class UserController {

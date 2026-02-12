@@ -1,24 +1,24 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { Result } from "../../../../shared/patterns/result";
-import { IAuthService } from "../../../../Core/baseModule/contracts/iAuthService";
-import { RegisterRequest } from "../../../../Core/baseModule/requests/auth/registerRequest";
+import { Result } from "../../../../../shared/patterns/result";
+import { IAuthService } from "../../../contracts/iAuthService";
+import { RegisterRequest } from "../../../requests/auth/registerRequest";
 import { IUserRepository } from "../../domain/iRepositoryies/iUserRepository";
 import { User } from "../../domain/entities/user";
 import { UserStatus } from "../../domain/entities/userStatus";
-import { DateService } from "../../../../../utilities/dateService";
-import { HttpStatusCode } from "../../../../../utilities/httpStatusCode";
+import { DateService } from "../../../../../../utilities/dateService";
+import { HttpStatusCode } from "../../../../../../utilities/httpStatusCode";
 import { TokenService } from "../services/tokenService";
-import { PasswordService } from "../../../../shared/security/passwordService";
-import { LoginRequest } from "../../../../Core/baseModule/requests/auth/loginRequest";
-import { LoginResponse } from "../../../../Core/baseModule/responses/auth/loginResponse";
-import { ForgotPasswordResponse } from "../../../../Core/baseModule/responses/auth/forgotPasswordResponse";
+import { PasswordService } from "../../../../../shared/security/passwordService";
+import { LoginRequest } from "../../../requests/auth/loginRequest";
+import { LoginResponse } from "../../../responses/auth/loginResponse";
+import { ForgotPasswordResponse } from "../../../responses/auth/forgotPasswordResponse";
 import {
   Registerresponse,
   ResetPasswordResponse,
-} from "../../../../Core/baseModule/responses/auth/resetPasswordResponse";
-import { ChangePasswordRequest } from "../../../../Core/baseModule/requests/auth/changePasswordRequest";
+} from "../../../responses/auth/resetPasswordResponse";
+import { ChangePasswordRequest } from "../../../requests/auth/changePasswordRequest";
 import { AuthMessages } from "../../config/auth.message";
-import { LogMethod } from "../../../../shared/decorators/log.decorator";
+import { LogMethod } from "../../../../../shared/decorators/log.decorator";
 
 @Injectable()
 export class AuthService implements IAuthService {

@@ -1,12 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { Result } from "../../../../shared/patterns/result";
+import { Result } from "../../../../../shared/patterns/result";
 import { IUserRepository } from "../../domain/iRepositoryies/iUserRepository";
-import { IUserService } from "../../../../Core/baseModule/contracts/iUserService";
-import { UpdateUserRequest } from "../../../../Core/baseModule/requests/user/updateUserRequest";
-import { UsersResponse } from "../../../../Core/baseModule/responses/user/usersResponse";
-import { Cursor } from "../../../../shared/patterns/cursure";
-import { DateService } from "../../../../../utilities/dateService";
-import { HttpStatusCode } from "../../../../../utilities/httpStatusCode";
+import { IUserService } from "../../../contracts/iUserService";
+import { UpdateUserRequest } from "../../../requests/user/updateUserRequest";
+import { UsersResponse } from "../../../responses/user/usersResponse";
+import { Cursor } from "../../../../../shared/patterns/cursure";
+import { DateService } from "../../../../../../utilities/dateService";
+import { HttpStatusCode } from "../../../../../../utilities/httpStatusCode";
 
 @Injectable()
 export class UserService implements IUserService {
