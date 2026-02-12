@@ -8,45 +8,44 @@ export class PasswordService {
   private readonly digest = "sha512";
 
   hashPassword(password: string): string {
-    debugger;
     const salt = randomBytes(16).toString("hex");
     const hash = pbkdf2Sync(
       password,
       salt,
       this.iterations,
       this.keylen,
-      this.digest
+      this.digest,
     ).toString("hex");
 
     return `${salt}:${hash}`;
   }
 
-verifyPassword(stored: string | null | undefined, password: string): boolean {
-  debugger;
-  if (!stored) {
-    return false;
+  verifyPassword(stored: string | null | undefined, password: string): boolean {
+    if (!stored) {
+      return false;
+    }
+
+    const parts = stored.split(":");
+    if (parts.length !== 2) {
+      throw new Error(
+        `Invalid stored password format. Expected "salt:hash" but got: "${stored}"`,
+      );
+    }
+
+    const [salt, originalHash] = parts;
+
+    const hash = pbkdf2Sync(
+      password,
+      salt,
+      this.iterations,
+      this.keylen,
+      this.digest,
+    ).toString("hex");
+    if (hash.length !== originalHash.length) return false;
+
+    return timingSafeEqual(
+      Buffer.from(hash, "hex"),
+      Buffer.from(originalHash, "hex"),
+    );
   }
-
-  const parts = stored.split(":");
-  if (parts.length !== 2) {
-    throw new Error(`Invalid stored password format. Expected "salt:hash" but got: "${stored}"`);
-  }
-
-  const [salt, originalHash] = parts;
-
-  const hash = pbkdf2Sync(
-    password,
-    salt,
-    this.iterations,
-    this.keylen,
-    this.digest
-  ).toString("hex");
-  if (hash.length !== originalHash.length) return false;
-
-  return timingSafeEqual(
-    Buffer.from(hash, "hex"),
-    Buffer.from(originalHash, "hex")
-  );
-}
-
 }

@@ -1,23 +1,39 @@
-import { Body, Controller, Get, Param, Post, Put, Delete } from "@nestjs/common";
-import { IRoleService } from "../application/contracts/iRoleService";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+} from "@nestjs/common";
+import { IRoleService } from "../../../Core/baseModule/contracts/iRoleService";
+import {
+  CreateRoleRequest,
+  UpdateRoleRequest,
+} from "../../../Core/baseModule/requests/role/createRoleRequest";
 
 @Controller("roles")
 export class RoleController {
   constructor(private readonly service: IRoleService) {}
 
   @Get()
-  getAllRoles() {
-    return this.service.getAllRoles();
+  getAllRoles(
+    @Query("cursor") cursor: string | null = null,
+    @Query("limit") limit = 10,
+  ) {
+    return this.service.getAllRoles(cursor, Number(limit));
   }
 
   @Post()
-  createRole(@Body("roleName") roleName: string) {
-    return this.service.createRole(roleName);
+  createRole(@Body() request: CreateRoleRequest) {
+    return this.service.createRole(request);
   }
 
-  @Put(":roleId")
-  updateRole(@Param("roleId") roleId: string) {
-    return this.service.updateRole(roleId);
+  @Put()
+  updateRole(@Body() request: UpdateRoleRequest) {
+    return this.service.updateRole(request);
   }
 
   @Delete(":roleId")
@@ -29,7 +45,7 @@ export class RoleController {
   addRoleToUser(
     @Body("userId") userId: string,
     @Body("roleName") roleName: string,
-    @Body("moduleKey") moduleKey?: string
+    @Body("moduleKey") moduleKey?: string,
   ) {
     return this.service.addRoleToUser(userId, roleName, moduleKey);
   }
