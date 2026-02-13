@@ -2,9 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { BaseRepository } from "../baseRepository";
-import { IUserRepository } from "../../baseModule/auth/domain/iRepositoryies/iUserRepository";
-import { User } from "../../baseModule/auth/domain/entities/user";
+import { BaseRepository } from "../../../../infra/baseRepository";
+import { User } from "../../domain/entities/user";
+import { IUserRepository } from "../../domain/iRepositoryies/iUserRepository";
 
 @Injectable()
 export class UserRepository

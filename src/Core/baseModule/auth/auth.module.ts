@@ -4,7 +4,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { AuthService } from "./application/services/auth.Service";
 import { AuthController } from "./controllers/auth.controller";
 import { User } from "./domain/entities/user";
-import { UserRepository } from "../../infra/repositories/userRepository";
+import { UserRepository } from "./infra/repositories/userRepository";
 import { DateService } from "../../../../utilities/dateService";
 import { TokenService } from "./application/services/token.Service";
 import { PasswordService } from "../../../shared/security/passwordService";
@@ -15,7 +15,7 @@ import { UserController } from "./controllers/user.controller";
 import { UserService } from "./application/services/user.Service";
 import { RoleController } from "./controllers/role.controller";
 import { RoleService } from "./application/services/role.Service";
-import { RoleRepository } from "../../infra/repositories/roleRepository";
+import { RoleRepository } from "./infra/repositories/roleRepository";
 import { authConfig } from "../../../config/env";
 import { AuthStrategy } from "./auth.strategy/auth.strategy";
 
