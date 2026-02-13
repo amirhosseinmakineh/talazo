@@ -1,6 +1,6 @@
 import { DateService } from "utilities/dateService";
 import { IRoleRepository } from "../../domain/iRepositoryies/iRoleRepository";
-import { IRoleService } from "../../contracts/iRoleService";
+import { IRoleService } from "../../contracts/iRole.Service";
 import { GetAllRolesResponse } from "../../responses/role/getAllRoles";
 import { Result } from "../../../../../shared/patterns/result";
 import { Inject, Injectable } from "@nestjs/common";

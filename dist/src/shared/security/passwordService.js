@@ -16,13 +16,11 @@ let PasswordService = class PasswordService {
         this.digest = "sha512";
     }
     hashPassword(password) {
-        debugger;
         const salt = (0, crypto_1.randomBytes)(16).toString("hex");
         const hash = (0, crypto_1.pbkdf2Sync)(password, salt, this.iterations, this.keylen, this.digest).toString("hex");
         return `${salt}:${hash}`;
     }
     verifyPassword(stored, password) {
-        debugger;
         if (!stored) {
             return false;
         }

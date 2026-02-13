@@ -10,11 +10,8 @@ exports.AppDataSource = new typeorm_1.DataSource({
     username: "postgres",
     password: "1234",
     database: "talazo",
-    entities: [
-        "src/**/*.entity{.ts,.js}",
-        "src/**/domain/entities/*{.ts,.js}",
-    ],
-    migrations: ["src/infra/migrations/*{.ts,.js}"],
+    entities: ["src/**/*.entity{.ts,.js}", "src/**/domain/entities/*{.ts,.js}"],
+    migrations: ["src/Core/infra/migrations/*{.ts,.js}"],
     synchronize: false,
 });
 //# sourceMappingURL=data-source.js.map

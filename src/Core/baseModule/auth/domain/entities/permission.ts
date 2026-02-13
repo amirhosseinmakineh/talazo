@@ -1,4 +1,4 @@
-import { BaseEntity } from "../../../../Core/domain/base.Entity";
+import { BaseEntity } from "../../../../domain/base.Entity";
 import { Entity, Column, OneToMany } from 'typeorm'
 import { RolePermission } from "./rolePermission";
 

@@ -8,7 +8,7 @@ import {
   Put,
   Query,
 } from "@nestjs/common";
-import { IRoleService } from "../contracts/iRoleService";
+import { IRoleService } from "../contracts/iRole.Service";
 import {
   CreateRoleRequest,
   UpdateRoleRequest,

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Result } from "../../../../../shared/patterns/result";
 import { IUserRepository } from "../../domain/iRepositoryies/iUserRepository";
-import { IUserService } from "../../contracts/iUserService";
+import { IUserService } from "../../contracts/iUser.Service";
 import { UpdateUserRequest } from "../../requests/user/updateUserRequest";
 import { UsersResponse } from "../../responses/user/usersResponse";
 import { Cursor } from "../../../../../shared/patterns/cursure";

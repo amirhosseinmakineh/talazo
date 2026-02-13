@@ -9,7 +9,7 @@ import {
 } from "@nestjs/common";
 import { ApiBody, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
-import { IAuthService } from "../contracts/iAuthService";
+import { IAuthService } from "../contracts/iAuth.Service";
 import { RegisterRequest } from "../requests/auth/registerRequest";
 import { LoginRequest } from "../requests/auth/loginRequest";
 import { JwtAuthGuard } from "../guards/JwtAuthGuard";

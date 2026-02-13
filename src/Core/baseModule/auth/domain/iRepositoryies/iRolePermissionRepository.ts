@@ -1,4 +1,4 @@
-import { IBaseRepository } from "../../../../Core/domain/iBaseRepository";
+import { IBaseRepository } from "../../../../domain/iBaseRepository";
 import { RolePermission } from "../entities/rolePermission";
 import { Injectable } from "@nestjs/common";
 Injectable()

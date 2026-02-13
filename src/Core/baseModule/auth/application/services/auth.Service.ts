@@ -1,13 +1,13 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Result } from "../../../../../shared/patterns/result";
-import { IAuthService } from "../../contracts/iAuthService";
+import { IAuthService } from "../../contracts/iAuth.Service";
 import { RegisterRequest } from "../../requests/auth/registerRequest";
 import { IUserRepository } from "../../domain/iRepositoryies/iUserRepository";
 import { User } from "../../domain/entities/user";
 import { UserStatus } from "../../domain/entities/userStatus";
 import { DateService } from "../../../../../../utilities/dateService";
 import { HttpStatusCode } from "../../../../../../utilities/httpStatusCode";
-import { TokenService } from "../services/tokenService";
+import { TokenService } from "./token.Service";
 import { PasswordService } from "../../../../../shared/security/passwordService";
 import { LoginRequest } from "../../requests/auth/loginRequest";
 import { LoginResponse } from "../../responses/auth/loginResponse";
