@@ -1,16 +1,13 @@
+import "dotenv/config";
 import "reflect-metadata";
 import { DataSource } from "typeorm";
+import { databaseConfig } from "../../config/env";
+
+const db = databaseConfig();
 
 export const AppDataSource = new DataSource({
-  type: "postgres",
-  host: "127.0.0.1",
-  port: 5432,
-  username: "postgres",
-  password: "1234",
-  database: "talazo",
-
+  ...db,
   entities: ["src/**/*.entity{.ts,.js}", "src/**/domain/entities/*{.ts,.js}"],
-
   migrations: ["src/Core/infra/migrations/*{.ts,.js}"],
   synchronize: false,
 });

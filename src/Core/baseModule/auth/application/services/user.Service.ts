@@ -76,15 +76,15 @@ export class UserService implements IUserService {
 
     const date = new Date();
 
-    const criteria = {
+    const updatePayload = {
       username: request.userName,
       mobileNumber: request.mobileNumber,
       updatedAt: this.dateService.convertTimestampToPersian(date.getTime()),
-    } as any;
+    };
 
     await this.repository.updateEntity(
-      { id: user.id, isDeleted: false } as any,
-      criteria,
+      { id: user.id, isDeleted: false },
+      updatePayload,
     );
 
     const updatedUser = await this.repository.getByUserName(request.userName);
@@ -141,12 +141,12 @@ export class UserService implements IUserService {
     );
 
     await this.repository.updateEntity(
-      { id: user.id } as any,
+      { id: user.id },
       {
         isDeleted: true,
         deletedAt: nowPersian,
         updatedAt: nowPersian,
-      } as any,
+      },
     );
 
     const deletedUser = await this.repository.getById(id);

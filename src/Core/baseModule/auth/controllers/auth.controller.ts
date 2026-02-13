@@ -1,20 +1,12 @@
-import {
-  Body,
-  Controller,
-  Post,
-  UseGuards,
-  Req,
-  Inject,
-  Res,
-} from "@nestjs/common";
-import { ApiBody, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Post, Inject, Res } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
 import { IAuthService } from "../contracts/iAuth.Service";
 import { RegisterRequest } from "../requests/auth/registerRequest";
 import { LoginRequest } from "../requests/auth/loginRequest";
-import { JwtAuthGuard } from "../guards/JwtAuthGuard";
 import { ChangePasswordRequest } from "../requests/auth/changePasswordRequest";
 import { LogMethod } from "../../../../shared/decorators/log.decorator";
+import { ForgotPasswordRequest } from "../requests/auth/forgotPasswordRequest";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -23,6 +15,7 @@ export class AuthController {
     @Inject("IAuthService")
     private readonly authService: IAuthService,
   ) {}
+
   @LogMethod()
   @Post("register")
   register(@Body() request: RegisterRequest) {
@@ -35,11 +28,12 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.authService.login(request);
+    const isProduction = process.env.NODE_ENV === "production";
 
     res.cookie("refresh_token", result.data?.refreshToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "strict" : "lax",
       path: "/auth/refresh",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -53,20 +47,10 @@ export class AuthController {
   }
 
   @Post("forgot-password")
-  @ApiBody({
-    schema: {
-      type: "object",
-      properties: {
-        mobileNumber: {
-          type: "string",
-          example: "09123456789",
-        },
-      },
-    },
-  })
-  forgotPassword(@Body("mobileNumber") mobileNumber: string) {
-    return this.authService.forgotPassword(mobileNumber);
+  forgotPassword(@Body() request: ForgotPasswordRequest) {
+    return this.authService.forgotPassword(request.mobileNumber);
   }
+
   @Post("change-password")
   changePassword(@Body() request: ChangePasswordRequest) {
     return this.authService.changePassword(request);

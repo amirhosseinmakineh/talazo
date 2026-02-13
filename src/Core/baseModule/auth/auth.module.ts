@@ -16,13 +16,21 @@ import { UserService } from "./application/services/user.Service";
 import { RoleController } from "./controllers/role.controller";
 import { RoleService } from "./application/services/role.Service";
 import { RoleRepository } from "../../infra/repositories/roleRepository";
+import { authConfig } from "../../../config/env";
+import { AuthStrategy } from "./auth.strategy/auth.strategy";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Role, RolePermission, Permission]),
-    JwtModule.register({
-      secret: process.env.JWT_ACCESS_SECRET || "dev_secret_change_me",
-      signOptions: { expiresIn: "15m" },
+    JwtModule.registerAsync({
+      useFactory: () => {
+        const auth = authConfig();
+
+        return {
+          secret: auth.accessTokenSecret,
+          signOptions: { expiresIn: auth.accessTokenExpiresIn },
+        };
+      },
     }),
   ],
   controllers: [AuthController, UserController, RoleController],
@@ -36,6 +44,7 @@ import { RoleRepository } from "../../infra/repositories/roleRepository";
     DateService,
     TokenService,
     PasswordService,
+    AuthStrategy,
     UserRepository,
     { provide: "IUserRepository", useExisting: UserRepository },
     RoleRepository,

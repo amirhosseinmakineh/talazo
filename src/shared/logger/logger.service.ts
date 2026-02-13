@@ -1,5 +1,4 @@
-// src/shared/logger/logger.service.ts
-import { LoggerService, Injectable } from '@nestjs/common';
+import { LoggerService, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class SystemLogService implements LoggerService {
@@ -9,33 +8,45 @@ export class SystemLogService implements LoggerService {
     this.context = context;
   }
 
-  log(message: any, ...optionalParams: any[]) {
-    const context = optionalParams[0] || this.context;
-    console.log(`[LOG] ${context ? `[${context}]` : ''}`, message);
+  private format(message: unknown, level: string, context?: string) {
+    if (typeof message === "object" && message !== null) {
+      return JSON.stringify({
+        level,
+        context,
+        ...(message as Record<string, unknown>),
+      });
+    }
+
+    return JSON.stringify({ level, context, message: String(message) });
   }
 
-  fatal(message: any, ...optionalParams: any[]) {
-    const context = optionalParams[0] || this.context;
-    console.error(`[FATAL] ${context ? `[${context}]` : ''}`, message);
+  log(message: unknown, ...optionalParams: unknown[]) {
+    const context = (optionalParams[0] as string) || this.context;
+    console.log(this.format(message, "log", context));
   }
 
-  error(message: any, ...optionalParams: any[]) {
-    const context = optionalParams[0] || this.context;
-    console.error(`[ERROR] ${context ? `[${context}]` : ''}`, message);
+  fatal(message: unknown, ...optionalParams: unknown[]) {
+    const context = (optionalParams[0] as string) || this.context;
+    console.error(this.format(message, "fatal", context));
   }
 
-  warn(message: any, ...optionalParams: any[]) {
-    const context = optionalParams[0] || this.context;
-    console.warn(`[WARN] ${context ? `[${context}]` : ''}`, message);
+  error(message: unknown, ...optionalParams: unknown[]) {
+    const context = (optionalParams[0] as string) || this.context;
+    console.error(this.format(message, "error", context));
   }
 
-  debug(message: any, ...optionalParams: any[]) {
-    const context = optionalParams[0] || this.context;
-    console.debug(`[DEBUG] ${context ? `[${context}]` : ''}`, message);
+  warn(message: unknown, ...optionalParams: unknown[]) {
+    const context = (optionalParams[0] as string) || this.context;
+    console.warn(this.format(message, "warn", context));
   }
 
-  verbose(message: any, ...optionalParams: any[]) {
-    const context = optionalParams[0] || this.context;
-    console.log(`[VERBOSE] ${context ? `[${context}]` : ''}`, message);
+  debug(message: unknown, ...optionalParams: unknown[]) {
+    const context = (optionalParams[0] as string) || this.context;
+    console.debug(this.format(message, "debug", context));
+  }
+
+  verbose(message: unknown, ...optionalParams: unknown[]) {
+    const context = (optionalParams[0] as string) || this.context;
+    console.log(this.format(message, "verbose", context));
   }
 }

@@ -6,10 +6,10 @@ export interface ResetPasswordResponse {
   resetPasswordToken: string;
 }
 
-export interface Registerresponse {
+export interface RegisterResponse {
   userName: string;
   mobileNumber: string;
-  userStatuse: UserStatus;
+  userStatus: UserStatus;
   isDeleted: boolean;
   createdAt: string | null;
   updatedAt: string | null;
