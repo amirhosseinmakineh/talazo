@@ -5,12 +5,12 @@ import { RegisterRequest } from "../requests/auth/registerRequest";
 import { ForgotPasswordResponse } from "../responses/auth/forgotPasswordResponse";
 import { LoginResponse } from "../responses/auth/loginResponse";
 import {
-  Registerresponse,
+  RegisterResponse,
   ResetPasswordResponse,
 } from "../responses/auth/resetPasswordResponse";
 
 export interface IAuthService {
-  register(request: RegisterRequest): Promise<Result<Registerresponse>>;
+  register(request: RegisterRequest): Promise<Result<RegisterResponse>>;
   login(request: LoginRequest): Promise<Result<LoginResponse>>;
   forgotPassword(mobileNumber: string): Promise<Result<ForgotPasswordResponse>>;
   changePassword(

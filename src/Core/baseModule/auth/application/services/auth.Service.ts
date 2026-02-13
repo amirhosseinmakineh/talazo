@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { Result } from "../../../../../shared/patterns/result";
 import { IAuthService } from "../../contracts/iAuth.Service";
 import { RegisterRequest } from "../../requests/auth/registerRequest";
@@ -13,17 +13,14 @@ import { LoginRequest } from "../../requests/auth/loginRequest";
 import { LoginResponse } from "../../responses/auth/loginResponse";
 import { ForgotPasswordResponse } from "../../responses/auth/forgotPasswordResponse";
 import {
-  Registerresponse,
+  RegisterResponse,
   ResetPasswordResponse,
 } from "../../responses/auth/resetPasswordResponse";
 import { ChangePasswordRequest } from "../../requests/auth/changePasswordRequest";
 import { AuthMessages } from "../../config/auth.message";
-import { LogMethod } from "../../../../../shared/decorators/log.decorator";
 
 @Injectable()
 export class AuthService implements IAuthService {
-  private readonly logger = new Logger(AuthService.name);
-
   constructor(
     @Inject("IUserRepository")
     private readonly repository: IUserRepository,
@@ -32,10 +29,8 @@ export class AuthService implements IAuthService {
     private readonly passwordService: PasswordService,
   ) {}
 
-  async register(request: RegisterRequest): Promise<Result<Registerresponse>> {
-    const existingUser = await this.repository.getByUserName(
-      request.userName as any,
-    );
+  async register(request: RegisterRequest): Promise<Result<RegisterResponse>> {
+    const existingUser = await this.repository.getByUserName(request.userName);
     if (existingUser) {
       return Result.failure(AuthMessages.USER_EXISTS, HttpStatusCode.CONFLICT);
     }
@@ -51,10 +46,10 @@ export class AuthService implements IAuthService {
       deletedAt: null,
     });
 
-    var result: Registerresponse = {
+    const result: RegisterResponse = {
       userName: user.username,
       mobileNumber: user.mobileNumber,
-      userStatuse: user.userStatus,
+      userStatus: user.userStatus,
       isDeleted: user.isDeleted,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
@@ -124,12 +119,12 @@ export class AuthService implements IAuthService {
     const resetToken = this.tokenService.generateResetToken();
 
     await this.repository.updateEntity(
-      { id: user.id } as any,
+      { id: user.id },
       {
         passwordResetTokenHash: this.tokenService.hash(resetToken),
         passwordResetExpiresAt: new Date(Date.now() + 15 * 60 * 1000),
         updatedAt: this.dateService.convertTimestampToPersian(Date.now()),
-      } as any,
+      },
     );
 
     const response: ForgotPasswordResponse = {
@@ -172,13 +167,13 @@ export class AuthService implements IAuthService {
     }
 
     await this.repository.updateEntity(
-      { id: user.id } as any,
+      { id: user.id },
       {
         passwordHash: await this.passwordService.hashPassword(
           request.newPassword,
         ),
         updatedAt: this.dateService.convertTimestampToPersian(Date.now()),
-      } as any,
+      },
     );
 
     const resetPasswordResponse: ResetPasswordResponse = {
@@ -197,7 +192,6 @@ export class AuthService implements IAuthService {
   private async tryFindUserByResetTokenHash(
     _hash: string,
   ): Promise<User | null> {
-    var user = await this.repository.getUserByResetToken(_hash);
-    return user;
+    return this.repository.getUserByResetToken(_hash);
   }
 }

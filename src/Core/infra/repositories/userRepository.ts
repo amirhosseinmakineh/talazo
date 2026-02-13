@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, FindOptionsWhere } from "typeorm";
+import { Repository } from "typeorm";
 
 import { BaseRepository } from "../baseRepository";
 import { IUserRepository } from "../../baseModule/auth/domain/iRepositoryies/iUserRepository";
@@ -14,15 +14,16 @@ export class UserRepository
   constructor(@InjectRepository(User) repo: Repository<User>) {
     super(repo);
   }
+
   getUserByResetToken(passwordResetTokenHash: string): Promise<User | null> {
-    return this.repository.findOne({where : {passwordResetTokenHash}} as any);
+    return this.repository.findOne({ where: { passwordResetTokenHash } });
   }
+
   getUserByMobileNumber(mobileNumber: string): Promise<User | null> {
-    return this.repository.findOne({where : {mobileNumber} as any})
+    return this.repository.findOne({ where: { mobileNumber } });
   }
-    async getByUserName(username: string): Promise<User | null> {
-    return await this.repository.findOne({
-      where: { username } as any,
-    });
-}
+
+  async getByUserName(username: string): Promise<User | null> {
+    return this.repository.findOne({ where: { username } });
+  }
 }
