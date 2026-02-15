@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Permission = void 0;
-const base_Entity_1 = require("../../../../Core/domain/base.Entity");
+const base_Entity_1 = require("../../../../domain/base.Entity");
 const typeorm_1 = require("typeorm");
 const rolePermission_1 = require("./rolePermission");
 let Permission = class Permission extends base_Entity_1.BaseEntity {
