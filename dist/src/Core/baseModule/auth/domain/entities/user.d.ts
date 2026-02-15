@@ -1,4 +1,4 @@
-import { BaseEntity } from "../../../../Core/domain/base.Entity";
+import { BaseEntity } from "../../../../domain/base.Entity";
 import { UserStatus } from "./userStatus";
 import { Role } from "./role";
 export declare class User extends BaseEntity {
